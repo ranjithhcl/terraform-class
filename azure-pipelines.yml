@@ -1,0 +1,39 @@
+trigger: none
+
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  bkstrgrg: 'mystorage'
+  bkstrg: 'rg-testing'
+  bkcontainer: 'tfstate'
+  bkstrgkey: 'devpipeline.terraform.tfstate'
+
+stages:
+  - stage: tfvalidate
+    jobs:
+      - job: validate
+        continueOnError: false
+        steps:
+          - task: TerraformInstaller@0
+            displayName: tfinstall
+            inputs:
+              terraformVersion: 'latest'
+          - task: TerraformTaskV3@3
+            displayNmae: plan
+            inputs:
+              provider: 'azurerm'
+              command: 'init'
+              backendServiceArm: 'Microsoft Azure Sponsorship(fb528fe3-e230-4dc2-9764-3a5ffb6cfac0)'
+              backendAzureRmResourceGroupName: '$(bkstrg)'
+              backendAzureRmStorageAccountName: '$(bkstrgrg)'
+              backendAzureRmContainerName: '$(bkcontainer)'
+              backendAzureRmKey: '$(bkstrgkey)'
+          - task: TerraformTaskV3@3
+            displayName: apply
+            inputs:
+              provider: 'azurerm'
+              command: 'apply'
+              environmentServiceNameAzureRM: 'Microsoft Azure Sponsorship(fb528fe3-e230-4dc2-9764-3a5ffb6cfac0)'
+          

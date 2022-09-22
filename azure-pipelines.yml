@@ -21,7 +21,7 @@ stages:
             inputs:
               terraformVersion: 'latest'
           - task: TerraformTaskV3@3
-            displayNmae: plan
+            displayName: plan
             inputs:
               provider: 'azurerm'
               command: 'init'
